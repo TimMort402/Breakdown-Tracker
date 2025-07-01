@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Root Cause Analysis</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+    #result { margin-top: 15px; font-weight: bold; color: green; }
+  </style>
+</head>
+<body>
+  <h1>Log Equipment Failure</h1>
+  <form id="breakdownForm">
+    <label>Equipment:</label>
+    <select id="equipment" required>
+      <option>Voortman SDC</option>
+      <option>Voortman SB</option>
+      <option>Voortman 807 Coper</option>
+      <option>Kinetic</option>
+      <option>Hydmec Saw</option>
+      <option>Dragon</option>
+      <option>Hines Bender</option>
+      <option>Press Brake</option>
+      <option>Angle Line</option>
+      <option>Camber Machine</option>
+      <option>Misc</option>
+    </select>
+
+    <label>Failure Description:</label>
+    <textarea id="failure_description" required></textarea>
+
+    <label>Reported By:</label>
+    <select id="reported_by" required>
+      <option>Rob R.</option>
+      <option>Josh Smith</option>
+      <option>Phil Crane</option>
+      <option>Ian Petrick</option>
+      <option>Jack Wilburn</option>
+      <option>Joe W.</option>
+      <option>Mark H.</option>
+      <option>Tim Mort</option>
+      <option>Curt M.</option>
+    </select>
+
+    <label>Root Cause:</label>
+    <textarea id="root_cause"></textarea>
+
+    <label>Corrective Action:</label>
+    <textarea id="corrective_action"></textarea>
+
+    <label>Resolved By:</label>
+    <input type="text" id="resolved_by" />
+
+    <label>Date Resolved:</label>
+    <input type="date" id="date_resolved" />
+
+    <button type="submit">✅ Submit Breakdown</button>
+  </form>
+
+  <p id="result"></p>
+
+  <script>
+    const form = document.getElementById('breakdownForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        equipment: document.getElementById('equipment').value,
+        failure_description: document.getElementById('failure_description').value,
+        reported_by: document.getElementById('reported_by').value,
+        date_reported: new Date().toISOString(),
+        root_cause: document.getElementById('root_cause').value,
+        corrective_action: document.getElementById('corrective_action').value,
+        resolved_by: document.getElementById('resolved_by').value,
+        date_resolved: document.getElementById('date_resolved').value || ""
+      };
+
+      const response = await fetch('http://127.0.0.1:8000/breakdown', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+      document.getElementById('result').innerText = result.message;
+      form.reset();
+    });
+  </script>
+</body>
+</html>

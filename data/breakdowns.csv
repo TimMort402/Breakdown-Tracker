@@ -1,0 +1,11 @@
+equipment,failure_description,reported_by,date_reported,root_cause,corrective_action,resolved_by,date_resolved
+Voortman SDC,Main Blast Screw Tripping Breaker,Rob R.,2025-07-01T14:41:19.869Z,Motor Bad,Replace Motor,Josh Smith,2025-06-30
+Voortman SDC,Blast Screw tripping breaker,Rob R.,2025-07-01T14:50:48.910Z,motor bad,replace motor,Josh Smith,2025-06-30
+Voortman SDC,Main Blast Screw,Rob R.,2025-07-01T14:54:22.056Z,Motor Bad,Replace Motor,Josh Smith,2025-06-30
+Voortman SDC,Grit Auger Motor Tripping Breaker,Rob R.,2025-07-01T15:01:57.398Z,Motor Failure,Replace Motor,Josh Smith,2025-06-30
+Voortman SDC,asdf,Rob R.,2025-07-01T15:07:36.150Z,asdf,asdf,asdf,2025-06-30
+Voortman SDC,asdf,Rob R.,2025-07-01T15:26:14.387Z,asdf,asdf,asdf,2025-06-30
+Voortman SB,its messed up,Rob R.,2025-07-01T15:27:13.499Z,broken,Ian broke it,"Tim, of course",2025-06-30
+Voortman SB,Grit Screw tripping Breaker,Rob R.,2025-07-01T15:33:07.206Z,Motor Failure,Replace Motor,Josh Smith,2025-06-30
+Voortman SB,grit auger motor,Joe W.,2025-07-01T15:41:27.722Z,Motor Failure,Replace Motor,Josh Smith,2025-06-30
+Voortman SB,asdfasfd,Phil Crane,2025-07-01T16:12:31.960Z,sdaffasdf,adsfasd,Josh Smith,2025-06-30
