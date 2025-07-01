@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "cosmic-adapter-444413-b1",
+  "private_key_id": "207d1431f96b4d954609c0e96e83536a8d425bbb",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDFGSEDajsBJh4f\nAXS4n2zYwK4/KEfAa+cYW8dhnZtReA/fk3Eu+lPRAA5iH9gyxQcOtF8SoeJvbSqb\nxQfQYz1Ftr3Oayfd8UkHs3OxHsKqIr0HfxpA4S7jv0NxKLSvPmw6Uwt+M0mqphNZ\n2PloARNskGcNn+UhPmTMBJS3qXd0Pj0NiEv3yghl+uUMwT2fOAGCR1MTTLmU8taW\nyBABP+ZhQQLqAQxfpoGU5A+Puhts72M1AJe73u/d3DXo2pwyaZG/xSAEJj59K5xj\n+2rtH0ah8jFbRshUn3Jenv6UBImxQpxqOT5z2vUXg227tkQpHvZS5S9+9NubFKDX\nuALTSmUzAgMBAAECggEAWRZzKB5/nhTTH5OiZQLWiaCKAg0cZXrAQW/WjqZU+n2I\nuzdjPOc0NG9QkQSwzb3l4z0fDgZzGYdf73me/w+kNdsULvWbVwPFTUBNJj1vosRB\n6d4HCVVfQt0ESGUsSluuQqyfsMLQ5NvdOkrK7Lozw+n/Upa31A9mMxtM9zkXv8fI\nAYpHDocfkz95+WImqAGVWxkPCKtHpjKoF9TWizQwsQnzhZnOpnLhUC213woimX15\nx8PsApmRPynAs2pQCigG3D+ULpHKwA5qFAEC0ltVVWPhkzjTuo/jcd4QxJvIM6Ti\n8QDc9Cs8KAygNfViOtl1mvbNvrjZiy9PTFHK93ipdQKBgQD3XcYvDXRb4eBzmPf/\nmR7P3/fZ69fVzfjFSeUH3hdKQDD/taVjTlWTuyhi8RD2A15xTgPkvVbhe79blgBw\noAlr5ncErEnXfWrztOWYdSZYrV0gtJuBYYrKVG0/GMAb+/cdYb4n1IETD4BEtUdd\nxSe6+ofx6FS5Tn9u6pRdPOSxHQKBgQDL+jUSyMI1ePV5icU9m46Jh/LSBMcNNAhs\ng2W5A7DYMsGHaR13LLlmo+5/eKymOLLrPu1aUVSfyd+z4L35zn95qWO+K/JKOxnD\nDTbI166cPQBFNPu8Pr/t7RVZU4jvmoVfGgI2Q+G3YVNnbuS94g+JvhG+8nbOJYfO\n/9OzZ2VujwKBgQDWYphjqTaCd4YOybGN/Uf+A28MmGEsNOH5Iqzzn6DxwiZ1SBm5\nsmdqrNc4wRLhFFRiwKmRMiO9MoHLP3rMIXdo44mdLDCnKVRrOQmPk2CTlFTVBpKL\nlF00M+2mtK2y0zH9bfvfC0Z+nX2ejrn2Y+umGoF9v8zF+WlqWLYTBLZzZQKBgQCK\ntQzeRzL51dVn3q4IJP4avB39f040xktsLzY/SCk7+9fq0yo8Xmd9SsDmYhNVvXy9\nyD7zihb3yfmbgprtguTgwLWZHp1WqTXtk9DLZw/QIxNJ/Kuq6SjvDKfV5J5cAUHs\n1+zlJegaIc7rqVdXYKCcVGoQ5SSxLohZ1VIKz6cENQKBgQC2QPGahChNM98q8Fql\nT/v8bq/XnYTTAgEf4d9Pc+hjD9LwJNnhqgdHP7zVLREfciq/YLfHsx3VMnium2hN\nYk/iY6jgxCt7fYNUyjTjosBlUtimLUpiYzuy0yhvbGCItXVw2RCqCDMiIMtBlCdY\n06287ATEsDQrQ7+M07LjcnAj+A==\n-----END PRIVATE KEY-----\n",
+  "client_email": "breakdown-logger@cosmic-adapter-444413-b1.iam.gserviceaccount.com",
+  "client_id": "111228596318497401867",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/breakdown-logger%40cosmic-adapter-444413-b1.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

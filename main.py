@@ -1,15 +1,21 @@
 from fastapi import FastAPI, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
-import csv
 import os
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+# ---------- CONFIG ---------- #
+SHEET_NAME = "Breakdown Log"
+SCOPES = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+CREDS_FILE = "cosmic-adapter-444413-b1-207d1431f96b.json"
+# ---------------------------- #
 
 app = FastAPI()
 
-# Enable access from local HTML page
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,12 +24,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DATA_FILE = "data/breakdowns.csv"
+def get_sheet():
+    creds = ServiceAccountCredentials.from_json_keyfile_name(CREDS_FILE, SCOPES)
+    client = gspread.authorize(creds)
+    return client.open(SHEET_NAME).sheet1
 
-# Ensure data folder exists
-os.makedirs("data", exist_ok=True)
-
-# Define data model
 class Breakdown(BaseModel):
     equipment: str
     failure_description: str
@@ -36,13 +41,24 @@ class Breakdown(BaseModel):
 
 @app.post("/breakdown")
 def log_breakdown(entry: Breakdown):
-    write_mode = 'a' if os.path.exists(DATA_FILE) else 'w'
-    with open(DATA_FILE, write_mode, newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        if write_mode == 'w':
-            writer.writerow(entry.dict().keys())  # Header row
-        writer.writerow(entry.dict().values())
-    return {"message": "Breakdown logged successfully."}
+    try:
+        sheet = get_sheet()
+        row = [
+            entry.equipment,
+            entry.failure_description,
+            entry.reported_by,
+            entry.date_reported,
+            entry.root_cause,
+            entry.corrective_action,
+            entry.resolved_by,
+            entry.date_resolved
+        ]
+        sheet.append_row(row)
+        print("✅ Breakdown logged to Google Sheet:", row)
+        return {"message": "Breakdown logged to Google Sheet."}
+    except Exception as e:
+        print("❌ Failed to save breakdown:", e)
+        return {"message": f"Error saving breakdown: {e}"}
 
 @app.get("/form", response_class=HTMLResponse)
 def breakdown_form():
@@ -59,12 +75,8 @@ def breakdown_form():
 def view_logs(request: Request):
     print("🔥 /logs route hit")
     try:
-        if not os.path.exists(DATA_FILE):
-            return HTMLResponse("<h1>No breakdowns logged yet.</h1>")
-
-        with open(DATA_FILE, "r", encoding="utf-8") as f:
-            reader = csv.reader(f)
-            rows = list(reader)
+        sheet = get_sheet()
+        rows = sheet.get_all_values()
 
         if len(rows) < 2:
             return HTMLResponse("<h1>No breakdowns logged yet.</h1>")
@@ -72,7 +84,6 @@ def view_logs(request: Request):
         headers = rows[0]
         data_rows = rows[1:]
 
-        # Filter data based on query params
         query = dict(request.query_params)
         if "equipment" in query:
             data_rows = [r for r in data_rows if r[0] == query["equipment"]]
@@ -80,8 +91,7 @@ def view_logs(request: Request):
             data_rows = [r for r in data_rows if r[2] == query["reported_by"]]
 
         table = "<table border='1' cellpadding='5' style='border-collapse: collapse;'>"
-        table += "<thead><tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr></thead>"
-        table += "<tbody>"
+        table += "<thead><tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr></thead><tbody>"
         for row in data_rows:
             table += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>"
         table += "</tbody></table>"
@@ -101,7 +111,7 @@ def view_logs(request: Request):
         <html>
         <head><title>Breakdown Logs</title></head>
         <body>
-            <h1>Breakdown History</h1>
+            <h1>Breakdown History (Google Sheets)</h1>
             {search_form}
             {table}
         </body>
@@ -112,12 +122,8 @@ def view_logs(request: Request):
     except Exception as e:
         return HTMLResponse(f"<h1>Error reading logs: {e}</h1>", status_code=500)
 
-@app.get("/", include_in_schema=False)
-def root():
-    print("📡 / route hit — redirecting to /form")
-    return RedirectResponse(url="/form")
-
 if __name__ == "__main__":
-    print("🚀 FastAPI starting locally")
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=10000, reload=False)
+
+

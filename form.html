@@ -64,7 +64,7 @@
 
   <hr />
   <div style="margin-top: 30px;">
-    <button type="button" onclick="window.open('http://127.0.0.1:8015/logs', '_blank')">
+    <button type="button" onclick="window.open('https://breakdown-tracker.onrender.com/logs', '_blank')">
       📋 View Logs
     </button>
   </div>
@@ -78,23 +78,5 @@
         equipment: document.getElementById('equipment').value,
         failure_description: document.getElementById('failure_description').value,
         reported_by: document.getElementById('reported_by').value,
-        date_reported: new Date().toISOString(),
-        root_cause: document.getElementById('root_cause').value,
-        corrective_action: document.getElementById('corrective_action').value,
-        resolved_by: document.getElementById('resolved_by').value,
-        date_resolved: document.getElementById('date_resolved').value || ""
-      };
 
-      const response = await fetch('http://127.0.0.1:8015/breakdown', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
 
-      const result = await response.json();
-      document.getElementById('result').innerText = result.message;
-      form.reset();
-    });
-  </script>
-</body>
-</html>
