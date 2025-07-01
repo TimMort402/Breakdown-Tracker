@@ -80,4 +80,44 @@ def view_logs(request: Request):
             data_rows = [r for r in data_rows if r[2] == query["reported_by"]]
 
         table = "<table border='1' cellpadding='5' style='border-collapse: collapse;'>"
-        table += "<thead><tr>" + "".join(f"<th>{h}<
+        table += "<thead><tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr></thead>"
+        table += "<tbody>"
+        for row in data_rows:
+            table += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>"
+        table += "</tbody></table>"
+
+        search_form = """
+        <form method='get'>
+            <label>Filter by Equipment:</label>
+            <input type='text' name='equipment' placeholder='e.g. Kinetic' />
+            <label>Filter by Reported By:</label>
+            <input type='text' name='reported_by' placeholder='e.g. Ian Petrick' />
+            <button type='submit'>Filter</button>
+        </form>
+        <hr />
+        """
+
+        html = f"""
+        <html>
+        <head><title>Breakdown Logs</title></head>
+        <body>
+            <h1>Breakdown History</h1>
+            {search_form}
+            {table}
+        </body>
+        </html>
+        """
+        return HTMLResponse(html)
+
+    except Exception as e:
+        return HTMLResponse(f"<h1>Error reading logs: {e}</h1>", status_code=500)
+
+@app.get("/", include_in_schema=False)
+def root():
+    print("📡 / route hit — redirecting to /form")
+    return RedirectResponse(url="/form")
+
+if __name__ == "__main__":
+    print("🚀 FastAPI starting locally")
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=10000, reload=False)
