@@ -1,21 +1,21 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel
 from typing import Optional
+from datetime import datetime
 import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 # ---------- CONFIG ---------- #
-SHEET_NAME = "Breakdown Log"
+SHEET_NAME = "Breakdown Log"  # Google Sheet name
 SCOPES = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 CREDS_FILE = "cosmic-adapter-444413-b1-207d1431f96b.json"
 # ---------------------------- #
 
 app = FastAPI()
 
-# CORS for HTML frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,13 +24,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Google Sheets access
+# Setup Google Sheets client
 def get_sheet():
     creds = ServiceAccountCredentials.from_json_keyfile_name(CREDS_FILE, SCOPES)
     client = gspread.authorize(creds)
     return client.open(SHEET_NAME).sheet1
 
-# Breakdown model
+# Breakdown entry model
 class Breakdown(BaseModel):
     equipment: str
     failure_description: str
@@ -41,7 +41,6 @@ class Breakdown(BaseModel):
     resolved_by: Optional[str] = ""
     date_resolved: Optional[str] = ""
 
-# POST new breakdown to Google Sheets
 @app.post("/breakdown")
 def log_breakdown(entry: Breakdown):
     try:
@@ -57,63 +56,89 @@ def log_breakdown(entry: Breakdown):
             entry.date_resolved
         ]
         sheet.append_row(row)
-        print("✅ Logged:", row)
-        return {"message": "Breakdown logged to Google Sheet."}
+        print("✅ Breakdown logged:", row)
+        return HTMLResponse("<h1>Breakdown logged to Google Sheet.</h1>")
     except Exception as e:
-        print("❌ Logging failed:", e)
-        return {"error": str(e)}
+        print(f"❌ Error logging to sheet: {e}")
+        return HTMLResponse(f"<h1>Logging failed: {e}</h1>", status_code=500)
 
-# Serve HTML form
 @app.get("/form", response_class=HTMLResponse)
 def breakdown_form():
     try:
         base_path = os.path.dirname(os.path.abspath(__file__))
-        form_path = os.path.join(base_path, "form.html")
-        with open(form_path, "r", encoding="utf-8") as f:
+        file_path = os.path.join(base_path, "form.html")
+        print("🔍 Looking for form.html at:", file_path)
+        with open(file_path, "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
         return HTMLResponse("<h1>form.html not found</h1>", status_code=404)
 
-# Logs view
 @app.get("/logs", response_class=HTMLResponse)
 def view_logs(request: Request):
     try:
         sheet = get_sheet()
         rows = sheet.get_all_values()
+
         if len(rows) < 2:
             return HTMLResponse("<h1>No breakdowns logged yet.</h1>")
 
         headers = rows[0]
         data_rows = rows[1:]
+
+        # Filter data
         query = dict(request.query_params)
         if "equipment" in query:
             data_rows = [r for r in data_rows if r[0] == query["equipment"]]
         if "reported_by" in query:
             data_rows = [r for r in data_rows if r[2] == query["reported_by"]]
 
-        table = "<table border='1' cellpadding='5'><thead><tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr></thead><tbody>"
+        table = "<table border='1' cellpadding='5' style='border-collapse: collapse;'>"
+        table += "<thead><tr>" + "".join(f"<th>{h}</th>" for h in headers) + "</tr></thead>"
+        table += "<tbody>"
         for row in data_rows:
             table += "<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>"
         table += "</tbody></table>"
 
-        filters = """
+        search_form = """
         <form method='get'>
             <label>Filter by Equipment:</label>
-            <input type='text' name='equipment' />
+            <input type='text' name='equipment' placeholder='e.g. Kinetic' />
             <label>Filter by Reported By:</label>
-            <input type='text' name='reported_by' />
+            <input type='text' name='reported_by' placeholder='e.g. Ian Petrick' />
             <button type='submit'>Filter</button>
-        </form><hr />
+        </form>
+        <hr />
         """
 
-        return HTMLResponse(f"<html><body><h1>Breakdown Logs</h1>{filters}{table}</body></html>")
-    except Exception as e:
-        return HTMLResponse(f"<h1>Error loading logs: {e}</h1>", status_code=500)
+        html = f"""
+        <html>
+        <head><title>Breakdown Logs</title></head>
+        <body>
+            <h1>Breakdown History (Google Sheets)</h1>
+            {search_form}
+            {table}
+        </body>
+        </html>
+        """
+        return HTMLResponse(html)
 
-# Only needed for local testing (ignored on Render)
+    except Exception as e:
+        print(f"❌ Error reading from sheet: {e}")
+        return HTMLResponse(f"<h1>Error reading logs: {e}</h1>", status_code=500)
+
+# ✅ Redirect root to /form
+@app.get("/", include_in_schema=False)
+def root():
+    print("📡 / route hit — redirecting to /form")
+    return RedirectResponse(url="/form")
+
+# Local dev only
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=10000)
+    print("🚀 FastAPI starting locally")
+    uvicorn.run(app, host="0.0.0.0", port=10000, reload=False)
+
+
 
 
 
